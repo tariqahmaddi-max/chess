@@ -1,0 +1,802 @@
+
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080a18">
+<title>آموزش شطرنج به لالا تی</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:#070916;
+  --panel:#10152a;
+  --cyan:#54f6ff;
+  --pink:#ff4fcb;
+  --violet:#9871ff;
+  --text:#edf5ff;
+  --muted:#92a1bd;
+  --line:#283451;
+  --glow:0 0 18px #54f6ff55,0 0 45px #9871ff22;
+}
+
+* {box-sizing:border-box}
+
+body {
+  margin:0;
+  background:
+    radial-gradient(ellipse at 15% 10%,#18244a 0,transparent 35%),
+    radial-gradient(ellipse at 90% 80%,#35123b 0,transparent 32%),
+    var(--bg);
+  color:var(--text);
+  font-family:Vazirmatn,sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+body:before {
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  opacity:.13;
+  background-image:
+    linear-gradient(#6474a522 1px,transparent 1px),
+    linear-gradient(90deg,#6474a522 1px,transparent 1px);
+  background-size:38px 38px;
+}
+
+header {
+  max-width:1280px;
+  margin:auto;
+  padding:22px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+}
+
+.brand {display:flex;align-items:center;gap:12px}
+
+.logo {
+  width:46px;
+  height:46px;
+  border-radius:15px;
+  display:grid;
+  place-items:center;
+  font-size:27px;
+  background:linear-gradient(135deg,#54f6ff22,#ff4fcb33);
+  border:1px solid #54f6ff77;
+  box-shadow:var(--glow);
+}
+
+.brand h1 {font-size:20px;margin:0;font-weight:900}
+.brand small {color:var(--muted);font-size:11px}
+
+.top-tag {
+  border:1px solid #9871ff66;
+  color:#d8caff;
+  background:#9871ff13;
+  padding:8px 13px;
+  border-radius:999px;
+  font-size:12px;
+}
+
+main {
+  max-width:1280px;
+  margin:auto;
+  padding:8px 24px 50px;
+}
+
+.hero {
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  gap:20px;
+  margin:14px 0 24px;
+}
+
+.eyebrow {color:var(--cyan);font-size:12px;letter-spacing:2px}
+
+.hero h2 {
+  font-size:clamp(25px,4vw,40px);
+  line-height:1.3;
+  margin:5px 0;
+  font-weight:900;
+}
+
+.hero p {margin:0;color:var(--muted);font-size:14px}
+
+.level {
+  background:#10152a;
+  border:1px solid var(--line);
+  padding:10px 15px;
+  border-radius:14px;
+  color:#dce7ff;
+  font-size:12px;
+}
+
+.layout {
+  display:grid;
+  grid-template-columns:minmax(300px,min(58vw,650px)) minmax(290px,1fr);
+  gap:22px;
+  align-items:start;
+}
+
+.panel {
+  background:linear-gradient(145deg,#121a31ee,#0d1225f2);
+  border:1px solid #33405f;
+  border-radius:22px;
+  box-shadow:0 18px 55px #0007,inset 0 1px #ffffff0b;
+  position:relative;
+  overflow:hidden;
+}
+
+.panel:before {
+  content:"";
+  position:absolute;
+  inset:0 15% auto;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--cyan),var(--pink),transparent);
+}
+
+.board-panel {padding:17px}
+
+.board-head {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:13px;
+}
+
+.player {font-size:13px;color:#d9e5ff}
+
+.turn {
+  font-size:11px;
+  color:var(--cyan);
+  border:1px solid #54f6ff55;
+  border-radius:99px;
+  padding:5px 10px;
+}
+
+.board-wrap {
+  padding:2px;
+  border-radius:14px;
+  background:linear-gradient(135deg,var(--cyan),var(--violet),var(--pink));
+  box-shadow:0 0 25px #54f6ff22,0 0 35px #ff4fcb19;
+  animation:edge 7s linear infinite;
+}
+
+@keyframes edge {
+  0%,100% {filter:hue-rotate(0)}
+  50% {filter:hue-rotate(70deg)}
+}
+
+#board {
+  display:grid;
+  grid-template-columns:repeat(8,1fr);
+  aspect-ratio:1;
+  border-radius:12px;
+  overflow:hidden;
+  direction:ltr;
+}
+
+.square {
+  border:0;
+  position:relative;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  padding:0;
+  min-width:0;
+}
+
+.light {background:#d9e4ed}
+.dark {background:#344768}
+
+.square .piece {
+  font-family:"DejaVu Sans",serif;
+  font-size:clamp(25px,5.2vw,54px);
+  line-height:1;
+  filter:drop-shadow(0 3px 2px #0008);
+  z-index:1;
+}
+
+.square.white-piece .piece {
+  color:white;
+  text-shadow:0 1px 1px #25324a,0 0 7px #fff8;
+}
+
+.square.black-piece .piece {
+  color:#151a2c;
+  text-shadow:0 1px 1px #fff7,0 0 7px #54f6ff66;
+}
+
+.square.selected {
+  box-shadow:inset 0 0 0 4px var(--cyan),inset 0 0 22px #54f6ff99;
+}
+
+.square.last {background-image:linear-gradient(#54f6ff55,#54f6ff55)}
+
+.square.hint {
+  box-shadow:inset 0 0 0 4px var(--pink),inset 0 0 24px #ff4fcbcc;
+}
+
+.square.legal:after {
+  content:"";
+  position:absolute;
+  width:25%;
+  height:25%;
+  border-radius:50%;
+  background:#0b142d66;
+  border:2px solid #fff9;
+}
+
+.square.capture:after {
+  content:"";
+  position:absolute;
+  inset:5%;
+  border:4px solid #ff4fcbcc;
+  border-radius:50%;
+}
+
+.coords {
+  position:absolute;
+  font-size:9px;
+  color:#293b59;
+  z-index:2;
+  pointer-events:none;
+}
+
+.coord-file {bottom:2px;left:4px}
+.coord-rank {top:1px;right:4px}
+
+.board-foot {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  color:var(--muted);
+  font-size:11px;
+  margin-top:12px;
+}
+
+.actions {display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
+
+button {font-family:inherit}
+
+.btn {
+  border:1px solid #405071;
+  background:#1a2440;
+  color:#edf5ff;
+  padding:10px 13px;
+  border-radius:12px;
+  font-size:12px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.btn:hover {
+  border-color:var(--cyan);
+  box-shadow:var(--glow);
+  transform:translateY(-1px);
+}
+
+.btn.primary {
+  background:linear-gradient(110deg,#147d91,#6542b7);
+  border-color:#65eaff88;
+}
+
+.btn.hint-btn {
+  background:linear-gradient(110deg,#7b286d,#4b358d);
+  border-color:#ff4fcb77;
+}
+
+.learning-top {padding:18px;margin:0 0 18px}
+
+.side {display:grid;gap:15px}
+.info {padding:18px}
+
+.section-title {
+  font-size:15px;
+  font-weight:800;
+  margin:0 0 12px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.section-title:before {
+  content:"";
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--cyan);
+  box-shadow:0 0 10px var(--cyan);
+}
+
+#explanation {
+  font-size:13px;
+  line-height:2;
+  color:#d5def2;
+  min-height:76px;
+}
+
+.explain-tag {
+  display:inline-block;
+  font-size:10px;
+  color:var(--cyan);
+  background:#54f6ff12;
+  border:1px solid #54f6ff44;
+  border-radius:99px;
+  padding:3px 9px;
+  margin-bottom:8px;
+}
+
+#hintText {font-size:12px;line-height:1.9;color:#f2d9f0;min-height:30px}
+
+.stats {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+
+.stat {
+  background:#0b1021;
+  border:1px solid #263451;
+  border-radius:13px;
+  padding:10px;
+  text-align:center;
+}
+
+.stat strong {font-size:19px;display:block;color:var(--cyan)}
+.stat span {font-size:10px;color:var(--muted)}
+
+.moves {max-height:185px;overflow:auto;display:grid;gap:6px}
+
+.move-row {
+  display:grid;
+  grid-template-columns:35px 1fr 1fr;
+  gap:8px;
+  font-size:12px;
+  color:#dce7ff;
+  padding:6px 8px;
+  border-radius:8px;
+  background:#0c1224;
+}
+
+.move-row .num {color:var(--muted)}
+.move-row .active {color:var(--cyan)}
+
+.lesson {font-size:12px;line-height:1.9;color:var(--muted)}
+.lesson strong {color:#e9efff}
+
+footer {
+  text-align:center;
+  color:#687995;
+  font-size:10px;
+  margin-top:24px;
+}
+
+@media(max-width:850px) {
+  .layout {grid-template-columns:1fr;max-width:650px;margin:auto}
+  .hero {align-items:start;flex-direction:column}
+  .board-panel {padding:12px}
+  .square .piece {font-size:clamp(28px,8vw,54px)}
+}
+
+@media(max-width:420px) {
+  header {padding:15px}
+  .top-tag {font-size:10px}
+  main {padding:5px 12px 35px}
+  .board-panel {padding:9px}
+  .info {padding:14px}
+  .btn {padding:9px 10px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">♞</div>
+    <div>
+      <h1>اموزش شطرنج به لالا تی</h1>
+      <small>آکادمی هوشمند شطرنج</small>
+    </div>
+  </div>
+  <div class="top-tag">✦ آموزش تعاملی · نسخه آزمایشی</div>
+</header>
+
+<main>
+
+<section class="hero">
+  <div>
+    <div class="eyebrow">LEARN · THINK · MASTER</div>
+    <h2>هر حرکت، یک <span style="color:var(--cyan)">درس تازه</span></h2>
+    <p>شطرنج را قدم‌به‌قدم یاد بگیر؛ حرکت کن، دلیلش را بفهم و بهتر بازی کن.</p>
+  </div>
+  <div class="level">سطح: <b style="color:#c9b7ff">مبتدی</b> | حالت: دونفره</div>
+</section>
+
+<section class="panel info learning-top">
+  <h3 class="section-title">معلم هوشمند</h3>
+  <div class="explain-tag" id="explainTag">آماده یادگیری</div>
+  <div id="explanation">
+    یک مهره را انتخاب کن و حرکت بده. بعد از هر حرکت، توضیح ساده‌ای درباره هدف و نکته آموزشی آن می‌بینی.
+  </div>
+</section>
+
+<div class="layout">
+
+<section class="panel board-panel">
+  <div class="board-head">
+    <span class="player">♔ سفید · نوبت شما</span>
+    <span class="turn" id="turn">نوبت سفید</span>
+  </div>
+
+  <div class="board-wrap">
+    <div id="board" aria-label="صفحه شطرنج"></div>
+  </div>
+
+  <div class="board-foot">
+    <span id="status">بازی آماده است؛ مهره سفید شروع می‌کند.</span>
+    <span>۸ × ۸</span>
+  </div>
+
+  <div class="actions">
+    <button class="btn primary" id="new">بازی تازه</button>
+    <button class="btn" id="undo">↶ برگشت</button>
+    <button class="btn hint-btn" id="hint">✧ راهنمای حرکت</button>
+    <button class="btn" id="flip">⇄ چرخش صفحه</button>
+  </div>
+</section>
+
+<aside class="side">
+
+<section class="panel info">
+  <h3 class="section-title">پیشنهاد حرکت</h3>
+  <div id="hintText">برای دیدن یک حرکت پیشنهادی، دکمه «راهنمای حرکت» را بزن.</div>
+</section>
+
+<section class="panel info">
+  <h3 class="section-title">پیشرفت این بازی</h3>
+  <div class="stats">
+    <div class="stat"><strong id="count">۰</strong><span>حرکت‌ها</span></div>
+    <div class="stat"><strong id="captures">۰</strong><span>مهره‌گیری</span></div>
+    <div class="stat"><strong id="checks">۰</strong><span>کیش‌ها</span></div>
+  </div>
+</section>
+
+<section class="panel info">
+  <h3 class="section-title">تاریخچه حرکت‌ها</h3>
+  <div class="moves" id="moves">
+    <div class="lesson">هنوز حرکتی انجام نشده است.</div>
+  </div>
+</section>
+
+<section class="panel info">
+  <h3 class="section-title">درس کوتاه امروز</h3>
+  <div class="lesson">
+    <strong>مرکز صفحه را کنترل کن.</strong><br>
+    خانه‌های مرکزی (e4، d4، e5 و d5) به مهره‌ها آزادی حرکت بیشتری می‌دهند.
+  </div>
+</section>
+
+</aside>
+</div>
+
+<footer>شاه‌مات · محیط آموزشی شطرنج</footer>
+</main>
+
+<script type="module">
+import { Chess } from 'https://cdn.jsdelivr.net/npm/chess.js@1.4.0/+esm';
+
+const game = new Chess();
+const board = document.querySelector('#board');
+
+const glyph = {
+  wk:'♔',wq:'♕',wr:'♖',wb:'♗',wn:'♘',wp:'♙',
+  bk:'♚',bq:'♛',br:'♜',bb:'♝',bn:'♞',bp:'♟'
+};
+
+const faFiles = ['الف','ب','ج','د','هـ','و','ز','ح'];
+
+let selected = null;
+let legal = [];
+let last = null;
+let hint = null;
+let flipped = false;
+let captures = 0;
+let checks = 0;
+let ply = 0;
+
+const $ = id => document.getElementById(id);
+
+function faNum(n) {
+  return String(n).replace(/\d/g,d=>'۰۱۲۳۴۵۶۷۸۹'[+d]);
+}
+
+function draw() {
+  board.innerHTML = '';
+
+  const ranks = flipped
+    ? [...Array(8).keys()]
+    : [7,6,5,4,3,2,1,0];
+
+  const files = flipped
+    ? [7,6,5,4,3,2,1,0]
+    : [0,1,2,3,4,5,6,7];
+
+  ranks.forEach((rank,ri) => {
+    files.forEach((file,ci) => {
+      const name = 'abcdefgh'[file] + (rank+1);
+      const piece = game.get(name);
+      const el = document.createElement('button');
+
+      el.className = 'square ' +
+        (((rank+file)%2===0) ? 'light' : 'dark');
+
+      if(piece)
+        el.classList.add(piece.color==='w'?'white-piece':'black-piece');
+
+      if(selected===name) el.classList.add('selected');
+
+      if(last && (last.from===name || last.to===name))
+        el.classList.add('last');
+
+      if(hint===name) el.classList.add('hint');
+
+      if(legal.some(m=>m.to===name))
+        el.classList.add(game.get(name)?'capture':'legal');
+
+      if(piece)
+        el.innerHTML = `<span class="piece">${glyph[piece.color+piece.type]}</span>`;
+
+      if(ri===7)
+        el.insertAdjacentHTML('beforeend',
+          `<span class="coords coord-file">${faFiles[file]}</span>`);
+
+      if(ci===0)
+        el.insertAdjacentHTML('beforeend',
+          `<span class="coords coord-rank">${faNum(rank+1)}</span>`);
+
+      el.addEventListener('click',()=>tap(name));
+      board.appendChild(el);
+    });
+  });
+
+  $('turn').textContent =
+    game.turn()==='w'?'نوبت سفید':'نوبت سیاه';
+
+  $('count').textContent=faNum(ply);
+  $('captures').textContent=faNum(captures);
+  $('checks').textContent=faNum(checks);
+
+  $('status').textContent =
+    game.isCheckmate()?'کیش‌ومات! بازی تمام شد.':
+    game.isDraw()?'بازی مساوی شد.':
+    game.isCheck()?'کیش! شاه در خطر است.':
+    game.turn()==='w'?'نوبت سفید؛ حرکت خود را انتخاب کن.':
+    'نوبت سیاه؛ حرکت کن.';
+
+  const history=game.history({verbose:true});
+
+  $('moves').innerHTML = history.length
+    ? history.reduce((acc,m,i)=>{
+        if(i%2===0) {
+          acc.push(`
+            <div class="move-row">
+              <span class="num">${faNum(Math.floor(i/2)+1)}</span>
+              <span>${m.san}</span>
+              <span>${history[i+1]?.san||''}</span>
+            </div>`);
+        }
+        return acc;
+      },[]).join('')
+    : '<div class="lesson">هنوز حرکتی انجام نشده است.</div>';
+}
+
+function tap(sq) {
+  if(game.isGameOver()) return;
+
+  if(selected && legal.some(m=>m.to===sq)) {
+    const move=game.move({
+      from:selected,
+      to:sq,
+      promotion:'q'
+    });
+
+    if(move) {
+      last=move;
+      ply++;
+
+      if(move.captured) captures++;
+      if(game.isCheck()) checks++;
+
+      hint=null;
+      selected=null;
+      legal=[];
+
+      explain(move);
+      draw();
+      return;
+    }
+  }
+
+  const p=game.get(sq);
+
+  if(p && p.color===game.turn()) {
+    selected=sq;
+    legal=game.moves({square:sq,verbose:true});
+    hint=null;
+
+    $('explanation').textContent =
+      `مهره ${pieceName(p)} انتخاب شد. خانه‌های دارای علامت، مقصدهای قانونی این مهره هستند.`;
+
+    $('explainTag').textContent='انتخاب مهره';
+    $('hintText').textContent='برای دیدن پیشنهاد بهتر، راهنمای حرکت را بزن.';
+  } else {
+    selected=null;
+    legal=[];
+  }
+
+  draw();
+}
+
+function pieceName(p) {
+  return ({
+    p:'پیاده',
+    n:'اسب',
+    b:'فیل',
+    r:'رخ',
+    q:'وزیر',
+    k:'شاه'
+  })[p.type];
+}
+
+function explain(m) {
+  const name=pieceName({type:m.piece});
+  const cap=m.captured
+    ? ` با گرفتن ${pieceName({type:m.captured})} حریف`
+    : '';
+
+  let why =
+    m.san.includes('#')
+    ? 'این حرکت کیش‌ومات است؛ شاه حریف هیچ راه قانونی برای نجات ندارد.'
+    : m.san.includes('+')
+    ? 'این حرکت به شاه حریف کیش می‌دهد.'
+    : m.captured
+    ? 'گرفتن مهره حریف می‌تواند برتری مادی ایجاد کند؛ اما مراقب پاسخ حریف باش.'
+    : center(m.to)
+    ? 'این حرکت به کنترل مرکز کمک می‌کند.'
+    : 'بعد از هر حرکت، تهدیدهای حریف و امنیت شاه خودت را بررسی کن.';
+
+  $('explainTag').textContent='تحلیل حرکت '+m.san;
+
+  $('explanation').textContent =
+    `${name} از ${m.from} به ${m.to} حرکت کرد${cap}. ${why}`;
+
+  $('hintText').textContent =
+    'حرکت انجام شد. حالا ببین حریف چه تهدیدی ایجاد می‌کند.';
+}
+
+function center(s) {
+  return ['d4','e4','d5','e5','c4','f4','c5','f5'].includes(s);
+}
+
+function evaluate() {
+  const vals={p:100,n:320,b:330,r:500,q:900,k:20000};
+  let score=0;
+
+  for(const row of game.board()) {
+    for(const p of row) {
+      if(p)
+        score += (p.color==='w'?1:-1)*vals[p.type];
+    }
+  }
+
+  for(const sq of ['d4','e4','d5','e5']) {
+    const p=game.get(sq);
+    if(p) score += (p.color==='w'?1:-1)*18;
+  }
+
+  return score;
+}
+
+function hintMove() {
+  if(game.isGameOver()) {
+    $('hintText').textContent='بازی تمام شده است؛ یک بازی تازه شروع کن.';
+    return;
+  }
+
+  const moves=game.moves({verbose:true});
+  let best=null;
+  let bestScore=game.turn()==='w'?-Infinity:Infinity;
+
+  for(const m of moves) {
+    game.move(m);
+    const score=evaluate();
+    game.undo();
+
+    if(
+      (game.turn()==='w' && score>bestScore) ||
+      (game.turn()==='b' && score<bestScore)
+    ) {
+      bestScore=score;
+      best=m;
+    }
+  }
+
+  if(!best) return;
+
+  selected=null;
+  legal=[];
+  hint=best.to;
+  draw();
+
+  const n=pieceName({type:best.piece});
+
+  const reason =
+    best.captured
+    ? 'این حرکت یک مهره حریف را می‌گیرد.'
+    : center(best.to)
+    ? 'این خانه به کنترل مرکز صفحه کمک می‌کند.'
+    : 'این گزینه بر اساس ارزش مهره‌ها و کنترل مرکز امتیاز بهتری دارد.';
+
+  $('explainTag').textContent='پیشنهاد آموزشی';
+
+  $('hintText').textContent =
+    `پیشنهاد: ${n} از ${best.from} به ${best.to}. ${reason} این ارزیابی ساده آموزشی است، نه تحلیل عمیق موتور حرفه‌ای.`;
+}
+
+$('new').onclick=()=>{
+  game.reset();
+  selected=null;
+  legal=[];
+  last=null;
+  hint=null;
+  captures=0;
+  checks=0;
+  ply=0;
+
+  $('explanation').textContent='بازی تازه آغاز شد. سفید شروع می‌کند.';
+  $('explainTag').textContent='شروع بازی';
+  $('hintText').textContent='برای دیدن حرکت پیشنهادی دکمه راهنما را بزن.';
+
+  draw();
+};
+
+$('undo').onclick=()=>{
+  const m=game.undo();
+
+  if(m) {
+    ply=Math.max(0,ply-1);
+    if(m.captured) captures=Math.max(0,captures-1);
+
+    selected=null;
+    legal=[];
+    hint=null;
+    last=null;
+
+    $('explanation').textContent='آخرین حرکت برگشت داده شد.';
+    $('explainTag').textContent='حرکت برگشت';
+
+    draw();
+  }
+};
+
+$('hint').onclick=hintMove;
+
+$('flip').onclick=()=>{
+  flipped=!flipped;
+  draw();
+};
+
+draw();
+</script>
+</body>
+</html>
